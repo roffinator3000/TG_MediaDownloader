@@ -16,7 +16,7 @@ from pyrogram.types import Message, Photo, Voice, Video, Animation, InlineKeyboa
 from pyrogram.enums import ParseMode, MessageMediaType
 
 from modules.ConfigManager import ConfigManager
-from modules.helpers import get_config_from_user
+from modules.helpers import get_config_from_user, get_config_from_docker
 from modules.models.ConfigFile import ConfigFile
 
 GITHUB_LINK: str = "https://github.com/LightDestory/TG_MediaDownloader"
@@ -44,11 +44,15 @@ def init() -> Client | None:
     """
     config: ConfigFile
     if not config_manager.load_config_from_file():
-        config = get_config_from_user()
+        config = get_config_from_docker()
         if config_manager.validate_config(config):
             config_manager.load_config(config)
-            if not config_manager.save_config_to_file():
-                exit(-1)
+        else:
+            config = get_config_from_user()
+            if config_manager.validate_config(config):
+                config_manager.load_config(config)
+                if not config_manager.save_config_to_file():
+                    exit(-1)
     else:
         config = config_manager.get_config()
     generate_workers(config.TG_MAX_PARALLEL)

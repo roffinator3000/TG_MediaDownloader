@@ -54,6 +54,23 @@ def get_config_from_user() -> ConfigFile:
     return config
 
 
+def get_config_from_docker() -> ConfigFile:
+    """
+    This function tries to read the information from docker env variables
+    :return: A ConfigFile instance
+    """
+    config: ConfigFile = ConfigFile()
+    config.TG_SESSION = os.getenv('TG_SESSION')
+    config.TG_API_ID = os.getenv('TG_API_ID')
+    config.TG_API_HASH = os.getenv('TG_API_HASH')
+    config.TG_BOT_TOKEN = os.getenv('TG_BOT_TOKEN')
+    config.TG_DOWNLOAD_PATH = os.getenv('TG_DOWNLOAD_PATH')
+    config.TG_MAX_PARALLEL = int(os.getenv('TG_MAX_PARALLEL', default=4))
+    config.TG_DL_TIMEOUT = int(os.getenv('TG_DL_TIMEOUT', default=5400))
+    config.TG_AUTHORIZED_USER_ID =os.getenv('TG_AUTHORIZED_USER_ID')
+    return config
+
+
 def is_json(file: Path) -> bool:
     """
     This function check if the file extension is 'json'
