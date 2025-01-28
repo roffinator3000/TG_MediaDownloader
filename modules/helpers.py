@@ -31,17 +31,19 @@ def get_env(name: str, message: str, is_int: bool = False) -> int | str:
             time.sleep(1)
 
 
-def get_config_from_user() -> ConfigFile:
+def get_config_from_user_or_env() -> ConfigFile:
     """
-    This function ask the user to enter the needed information
+    This function check for env vars or ask the user to enter the needed information
     :return: A ConfigFile instance
     """
+    logging.info("Retrieving configuration from user/env...")
     config: ConfigFile = ConfigFile()
     config.TG_SESSION = os.environ.get('TG_SESSION', 'tg_downloader')
     config.TG_API_ID = get_env('TG_API_ID', 'Enter your API ID: ', True)
     config.TG_API_HASH = get_env('TG_API_HASH', 'Enter your API hash: ')
     config.TG_BOT_TOKEN = get_env('TG_BOT_TOKEN', 'Enter your Telegram BOT token: ')
-    config.TG_DOWNLOAD_PATH = get_env('TG_DOWNLOAD_PATH', 'Enter full path to downloads directory: ')
+    config.TG_DOWNLOAD_PATH = (get_env('TG_DOWNLOAD_PATH', 'Enter full path to downloads directory: ')
+                               .replace("\"", ""))
     config.TG_MAX_PARALLEL = int(os.environ.get('TG_MAX_PARALLEL', 4))
     config.TG_DL_TIMEOUT = int(os.environ.get('TG_DL_TIMEOUT', 5400))
     while True:
@@ -51,23 +53,6 @@ def get_config_from_user() -> ConfigFile:
         if authorized_users:
             config.TG_AUTHORIZED_USER_ID = authorized_users
             break
-    return config
-
-
-def get_config_from_docker() -> ConfigFile:
-    """
-    This function tries to read the information from docker env variables
-    :return: A ConfigFile instance
-    """
-    config: ConfigFile = ConfigFile()
-    config.TG_SESSION = os.getenv('TG_SESSION')
-    config.TG_API_ID = os.getenv('TG_API_ID')
-    config.TG_API_HASH = os.getenv('TG_API_HASH')
-    config.TG_BOT_TOKEN = os.getenv('TG_BOT_TOKEN')
-    config.TG_DOWNLOAD_PATH = os.getenv('TG_DOWNLOAD_PATH')
-    config.TG_MAX_PARALLEL = int(os.getenv('TG_MAX_PARALLEL', default=4))
-    config.TG_DL_TIMEOUT = int(os.getenv('TG_DL_TIMEOUT', default=5400))
-    config.TG_AUTHORIZED_USER_ID =os.getenv('TG_AUTHORIZED_USER_ID')
     return config
 
 
